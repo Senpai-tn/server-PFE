@@ -18,10 +18,7 @@ class UserController extends AbstractController
         $data = json_decode($r->getContent(), true);
 
         $em = $this->getDoctrine()->getManager();
-        $user = new User();
-        $user->setFirstName('Khaled');
-        $em->persist($user);
-        $em->flush();
+
         $users = $em->getRepository(User::class)->findAll();
         return new Response(count($users) . ' users' . $data['id']);
     }
