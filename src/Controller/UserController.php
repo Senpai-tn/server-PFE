@@ -15,6 +15,10 @@ class UserController extends AbstractController
     public function index(): Response
     {
         $em = $this->getDoctrine()->getManager();
+        $user = new User();
+        $user->setFirstName('Khaled');
+        $em->persist($user);
+        $em->flush();
         $users = $em->getRepository(User::class)->findAll();
         return new Response(count($users) . ' users');
     }
