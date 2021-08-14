@@ -15,8 +15,9 @@ class UserController extends AbstractController
      */
     public function index(Request $r): Response
     {
+        $data = json_decode($r->getContent(), true);
         $em = $this->getDoctrine()->getManager();
         $users = $em->getRepository(User::class)->findAll();
-        return new Response(count($users) . ' users ' . $r->query->get('id'));
+        return new Response(count($users) . ' users ' . $data['id']);
     }
 }
