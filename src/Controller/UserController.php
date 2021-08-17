@@ -52,21 +52,21 @@ class UserController extends AbstractController
     public function Register(Request $r): Response
     {
         $data = json_decode($r->getContent(), true);
-        $firstName = '';
+        $firstName = $data['firstName'];
 
-        $lastName = '';
+        $lastName = $data['lastName'];
 
-        $email = '';
+        $email = $data['email'];
 
-        $adress = '';
+        $adress = $data['adress'];
 
-        $tel = '';
+        $tel = $data['tel'];
 
-        $login = 'K';
+        $login = $data['login'];
 
-        $password = md5('55');
+        $password = md5($data['password']);
 
-        $expo_id = '';
+        $expo_id = $data[''];
 
         $user = $this->em
             ->getRepository(User::class)
@@ -104,7 +104,7 @@ class UserController extends AbstractController
             }
             $list['created_at'] = $user->getCreatedAt();
             $list['deleted_at'] = $user->getDeletedAt();
-            return $this->json($list);
+            return $this->json(['message' => 'success', 'user' => $list]);
         }
     }
 
@@ -114,6 +114,33 @@ class UserController extends AbstractController
     public function Login(Request $r): Response
     {
         $data = json_decode($r->getContent(), true);
-        return $this->json(['message' => 'exist']);
+        $login = $data['login'];
+        $password = md5($data['password']);
+        $user = $this->em
+            ->getRepository(User::class)
+            ->findOneBy(['login' => $login]);
+        if ($user == null) {
+            return $this->json(['message' => 'not exist']);
+        } else {
+            if ($user->getPassword() != $password) {
+                return $this->json(['message' => 'password error']);
+            } else {
+                $list['id'] = $user->getId();
+                $list['firstName'] = $user->getFirstName();
+                $list['lastName'] = $user->getLastName();
+                $list['email'] = $user->getEmail();
+                $list['adress'] = $user->getAdress();
+                $list['tel'] = $user->getTel();
+                $list['login'] = $user->getLogin();
+                $list['password'] = $user->getPassword();
+                $list['expo_id'] = $user->getExpoId();
+                foreach ($user->getRoles() as $index => $role) {
+                    $list['roles'][$index] = $role->getType();
+                }
+                $list['created_at'] = $user->getCreatedAt();
+                $list['deleted_at'] = $user->getDeletedAt();
+                return $this->json(['message' => 'success', 'user' => $list]);
+            }
+        }
     }
 }
