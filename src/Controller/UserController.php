@@ -51,23 +51,22 @@ class UserController extends AbstractController
      */
     public function Register(Request $r): Response
     {
-        /*
         $data = json_decode($r->getContent(), true);
-        $firstName = $r->request->firstName;
+        $firstName = $data['firstName'];
 
-        $lastName = $r->request->lastName;
+        $lastName = $data['lastName'];
 
-        $email = $r->request->email;
+        $email = $data['email'];
 
-        $adress = $r->request->adress;
+        $adress = $data['adress'];
 
-        $tel = '';
+        $tel = $data['tel'];
 
-        $login = $r->request->login;
+        $login = $data['login'];
 
-        $password = md5($r->request->password);
+        $password = md5($data['password']);
 
-        $expo_id = '';
+        $expo_id = $data[''];
 
         $user = $this->em
             ->getRepository(User::class)
@@ -106,10 +105,7 @@ class UserController extends AbstractController
             $list['created_at'] = $user->getCreatedAt();
             $list['deleted_at'] = $user->getDeletedAt();
             return $this->json(['message' => 'success', 'user' => $list]);
-        }*/
-        $data = json_decode($r->getContent(), true);
-        $login = $data['login'];
-        return new Response($login);
+        }
     }
 
     /**
