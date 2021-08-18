@@ -131,6 +131,8 @@ class UserController extends AbstractController
         } else {
             if ($user->getPassword() != $password) {
                 return $this->json(['message' => 'password error']);
+            } elseif ($user->getDeletedAt() != null) {
+                return $this->json(['message' => 'user blocked']);
             } else {
                 $list['id'] = $user->getId();
                 $list['firstName'] = $user->getFirstName();
