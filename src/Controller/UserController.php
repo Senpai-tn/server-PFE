@@ -52,21 +52,21 @@ class UserController extends AbstractController
     public function Register(Request $r): Response
     {
         $data = json_decode($r->getContent(), true);
-        $firstName = $data['firstName'];
+        $firstName = $r->request->firstName;
 
-        $lastName = $data['lastName'];
+        $lastName = $r->request->lastName;
 
-        $email = $data['email'];
+        $email = $r->request->email;
 
-        $adress = $data['adress'];
+        $adress = $r->request->adress;
 
-        $tel = $data['tel'];
+        $tel = '';
 
-        $login = $data['login'];
+        $login = $r->request->login;
 
-        $password = md5($data['password']);
+        $password = md5($r->request->password);
 
-        $expo_id = $data[''];
+        $expo_id = '';
 
         $user = $this->em
             ->getRepository(User::class)
