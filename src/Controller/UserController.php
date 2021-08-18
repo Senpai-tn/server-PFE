@@ -51,6 +51,7 @@ class UserController extends AbstractController
      */
     public function Register(Request $r): Response
     {
+        /*
         $data = json_decode($r->getContent(), true);
         $firstName = $r->request->firstName;
 
@@ -105,7 +106,8 @@ class UserController extends AbstractController
             $list['created_at'] = $user->getCreatedAt();
             $list['deleted_at'] = $user->getDeletedAt();
             return $this->json(['message' => 'success', 'user' => $list]);
-        }
+        }*/
+        return new Response($r->request->get('firstName'));
     }
 
     /**
