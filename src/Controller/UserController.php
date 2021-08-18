@@ -52,6 +52,7 @@ class UserController extends AbstractController
     public function Register(Request $r): Response
     {
         $data = json_decode($r->getContent(), true);
+
         $firstName = $data['firstName'];
 
         $lastName = $data['lastName'];
@@ -66,12 +67,11 @@ class UserController extends AbstractController
 
         $password = md5($data['password']);
 
-        $expo_id = $data[''];
+        $expo_id = '';
 
         $user = $this->em
             ->getRepository(User::class)
             ->findOneBy(['login' => $login]);
-
         if ($user != null) {
             return $this->json(['message' => 'exist']);
         } else {
