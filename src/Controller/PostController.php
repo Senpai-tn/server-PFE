@@ -43,7 +43,7 @@ class PostController extends AbstractController
     {
         $post = new Post();
         $post->setTitle('title1');
-        $post->setDescription('Description1');
+        $post->setDescription('Description1' . new DateTime());
         $post->setCreatedAt(new DateTimeImmutable());
         $post->setDeletedAt(null);
         $this->em->persist($post);
