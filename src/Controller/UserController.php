@@ -107,7 +107,9 @@ class UserController extends AbstractController
             $list['deleted_at'] = $user->getDeletedAt();
             return $this->json(['message' => 'success', 'user' => $list]);
         }*/
-        return new Response($r->request->get('firstName'));
+        $data = json_decode($r->getContent(), true);
+        $login = $data['login'];
+        return new Response($login);
     }
 
     /**
