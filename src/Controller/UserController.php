@@ -88,6 +88,9 @@ class UserController extends AbstractController
             $user->setDeletedAt(null);
             $user->setExpoId($expo_id);
             $user->addRole($role);
+            $user->addRole($role);
+            $user->addRole($role);
+            $user->addRole($role);
             $this->em->persist($user);
             $this->em->flush();
             $list['id'] = $user->getId();
