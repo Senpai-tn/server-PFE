@@ -36,6 +36,9 @@ class PostController extends AbstractController
                     $list[$key]['id'] = $post->getId();
                     $list[$key]['title'] = $post->getTitle();
                     $list[$key]['description'] = $post->getDescription();
+                    foreach ($post->getImages() as $index => $image) {
+                        $list['roles'][$index] = $image;
+                    }
                     $list[$key]['created_at'] = $post->getCreatedAt();
                     $list[$key]['deleted_at'] = $post->getDeletedAt();
                 }
@@ -59,35 +62,28 @@ class PostController extends AbstractController
             $post->setDescription('Description1');
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
-            $data = json_decode($r->getContent(), true);
+            //$data = json_decode($r->getContent(), true);
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
                 $files[$i] = $r->files->get('file' . $i);
                 $i++;
             }
-
+            $images = [];
             foreach ($files as $file) {
                 $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                $file->move(
-                    $this->getParameter('images_directory') .
-                        '/' .
-                        date('Y-m-d'),
-                    $filename
-                );
+                $file->move($this->getParameter('images_directory'), $filename);
+                array_push($images, $filename);
             }
-
-            dd($files);
-            die();
-
-            /*$this->em->persist($post);
+            $post->setImages($images);
+            $this->em->persist($post);
             $this->em->flush();
             $list = [];
             $list['id'] = $post->getId();
             $list['title'] = $post->getTitle();
             $list['description'] = $post->getDescription();
             $list['created_at'] = $post->getCreatedAt();
-            $list['deleted_at'] = $post->getDeletedAt();*/
+            $list['deleted_at'] = $post->getDeletedAt();
             return $this->json(['message' => 'success', 'post' => 0]);
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);

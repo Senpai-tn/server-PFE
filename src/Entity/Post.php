@@ -37,6 +37,11 @@ class Post
      */
     private $deleted_at;
 
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $images = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +91,18 @@ class Post
     public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
     {
         $this->deleted_at = $deleted_at;
+
+        return $this;
+    }
+
+    public function getImages(): ?array
+    {
+        return $this->images;
+    }
+
+    public function setImages(?array $images): self
+    {
+        $this->images = $images;
 
         return $this;
     }
