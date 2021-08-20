@@ -55,7 +55,7 @@ class PostController extends AbstractController
     {
         try {
             $post = new Post();
-            $post->setTitle('title1');
+            $post->setTitle('title');
             $post->setDescription('Description1');
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
