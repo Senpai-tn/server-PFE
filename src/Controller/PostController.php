@@ -54,12 +54,12 @@ class PostController extends AbstractController
     public function FunctionName(Request $r): Response
     {
         try {
-            $post = new Post();
-            $post->setTitle('title');
-            $post->setDescription('Description1');
-            $post->setCreatedAt(new DateTimeImmutable());
-            $post->setDeletedAt(null);
-            $data = json_decode($r->getContent(), true);
+            // $post = new Post();
+            // $post->setTitle('title');
+            // $post->setDescription('Description1');
+            // $post->setCreatedAt(new DateTimeImmutable());
+            // $post->setDeletedAt(null);
+            // $data = json_decode($r->getContent(), true);
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
@@ -68,7 +68,7 @@ class PostController extends AbstractController
             }
 
             foreach ($files as $file) {
-                $filename = 'test' . $file->guessExtension();
+                $filename = 'test.' . $file->guessExtension();
                 $file->move(
                     $this->getParameter('images_directory'),
 
