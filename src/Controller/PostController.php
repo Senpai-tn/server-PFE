@@ -36,9 +36,7 @@ class PostController extends AbstractController
                     $list[$key]['id'] = $post->getId();
                     $list[$key]['title'] = $post->getTitle();
                     $list[$key]['description'] = $post->getDescription();
-                    foreach ($post->getImages() as $index => $image) {
-                        $list['roles'][$index] = $image;
-                    }
+                    $list[$key]['images'] = $post->getImages();
                     $list[$key]['created_at'] = $post->getCreatedAt();
                     $list[$key]['deleted_at'] = $post->getDeletedAt();
                 }
@@ -72,9 +70,11 @@ class PostController extends AbstractController
             $images = [];
             foreach ($files as $file) {
                 $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                $file->move($this->getParameter('images_directory'), $filename);
                 array_push($images, $filename);
+                $file->move($this->getParameter('images_directory'), $filename);
+                unset($filename);
             }
+
             $post->setImages($images);
             $this->em->persist($post);
             $this->em->flush();
@@ -82,9 +82,10 @@ class PostController extends AbstractController
             $list['id'] = $post->getId();
             $list['title'] = $post->getTitle();
             $list['description'] = $post->getDescription();
+            $list['images'] = $post->getImages();
             $list['created_at'] = $post->getCreatedAt();
             $list['deleted_at'] = $post->getDeletedAt();
-            return $this->json(['message' => 'success', 'post' => 0]);
+            return $this->json(['message' => 'success', 'post' => $list]);
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
         }
@@ -112,6 +113,7 @@ class PostController extends AbstractController
                 $list['id'] = $post->getId();
                 $list['title'] = $post->getTitle();
                 $list['description'] = $post->getDescription();
+                $list['images'] = $post->getImages();
                 $list['created_at'] = $post->getCreatedAt();
                 $list['deleted_at'] = $post->getDeletedAt();
                 return $this->json(['message' => 'success', 'post' => $list]);
@@ -139,6 +141,7 @@ class PostController extends AbstractController
                 $list['id'] = $post->getId();
                 $list['title'] = $post->getTitle();
                 $list['description'] = $post->getDescription();
+                $list['images'] = $post->getImages();
                 $list['created_at'] = $post->getCreatedAt();
                 $list['deleted_at'] = $post->getDeletedAt();
                 return $this->json(['message' => 'success', 'post' => $list]);
