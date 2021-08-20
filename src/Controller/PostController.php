@@ -68,11 +68,10 @@ class PostController extends AbstractController
             }
 
             foreach ($files as $file) {
-                $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                $filename = 'test' . $file->guessExtension();
                 $file->move(
-                    $this->getParameter('images_directory') .
-                        '/' .
-                        date('Y-m-d'),
+                    $this->getParameter('images_directory'),
+
                     $filename
                 );
             }
