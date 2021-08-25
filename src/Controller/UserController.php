@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Entity\Role;
 use App\Entity\User;
 use DateTime;
@@ -88,7 +89,7 @@ class UserController extends AbstractController
         if ($user != null) {
             return $this->json(['message' => 'exist']);
         } else {
-            $role = $this->em->getRepository(Role::class)->find(15);
+            //$role = $this->em->getRepository(Role::class)->find(15);
             $user = new User();
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
@@ -100,7 +101,7 @@ class UserController extends AbstractController
             $user->setCreatedAt(new DateTimeImmutable());
             $user->setDeletedAt(null);
             $user->setExpoId($expo_id);
-            $user->addRole($role);
+            //$user->addRole($role);
             $this->em->persist($user);
             $this->em->flush();
             $list = $this->returnUser($user);
@@ -177,5 +178,42 @@ class UserController extends AbstractController
         $this->em->flush();
         $list = $this->returnUser($user);
         return $this->json(['message' => 'success', 'user' => $list]);
+    }
+
+    /**
+     * @Route("/truncate", name="truncate")
+     */
+    public function delete(Request $r): Response
+    {
+        $data = json_decode($r->getContent(), true);
+        if (isset($data['user_id'])) {
+            $user = $this->em
+                ->getRepository(User::class)
+                ->find($data['user_id']);
+            $this->em->remove($user);
+            $this->em->flush();
+        }
+        if (isset($data['role_id'])) {
+            $role = $this->em
+                ->getRepository(Role::class)
+                ->find($data['role_id']);
+            $this->em->remove($role);
+            $this->em->flush();
+        }
+        if (isset($data['post_id'])) {
+            $post = $this->em
+                ->getRepository(Post::class)
+                ->find($data['post_id']);
+            $this->em->remove($post);
+            $this->em->flush();
+        } else {
+            $posts = $this->em->getRepository(Post::class)->findAll();
+            foreach ($posts as $post) {
+                $this->em->remove($post);
+            }
+
+            $this->em->flush();
+        }
+        return new Response('deleted');
     }
 }
