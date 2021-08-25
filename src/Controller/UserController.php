@@ -89,7 +89,9 @@ class UserController extends AbstractController
         if ($user != null) {
             return $this->json(['message' => 'exist']);
         } else {
-            //$role = $this->em->getRepository(Role::class)->find(15);
+            $role = $this->em
+                ->getRepository(Role::class)
+                ->findOneBy(['type' => 'USER']);
             $user = new User();
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
@@ -101,7 +103,7 @@ class UserController extends AbstractController
             $user->setCreatedAt(new DateTimeImmutable());
             $user->setDeletedAt(null);
             $user->setExpoId($expo_id);
-            //$user->addRole($role);
+            $user->addRole($role);
             $this->em->persist($user);
             $this->em->flush();
             $list = $this->returnUser($user);
@@ -215,5 +217,47 @@ class UserController extends AbstractController
             $this->em->flush();
         }
         return new Response('deleted');
+    }
+
+    /**
+     * @Route("/", name="update_user",methods={"PUT"})
+     */
+    public function FunctionName(Request $r): Response
+    {
+        $data = json_decode($r->getContent(), true);
+
+        $firstName = $data['firstName'];
+
+        $lastName = $data['lastName'];
+
+        $email = $data['email'];
+
+        $adress = $data['adress'];
+
+        $tel = $data['tel'];
+
+        $login = $data['login'];
+
+        $password = md5($data['password']);
+
+        $expo_id = $data['expo_id'];
+
+        $user = $this->em
+            ->getRepository(User::class)
+            ->findOneBy(['login' => $login]);
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setEmail($email);
+        $user->setAdress($adress);
+        $user->setTel($tel);
+        $user->setLogin($login);
+        $user->setPassword($password);
+        $user->setCreatedAt(new DateTimeImmutable());
+        $user->setDeletedAt(null);
+        $user->setExpoId($expo_id);
+        $this->em->persist($user);
+        $this->em->flush();
+        $list = $this->returnUser($user);
+        return $this->json(['message' => 'success', 'user' => $list]);
     }
 }
