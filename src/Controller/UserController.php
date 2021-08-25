@@ -88,8 +88,7 @@ class UserController extends AbstractController
         if ($user != null) {
             return $this->json(['message' => 'exist']);
         } else {
-            $role = $this->em->getRepository(Role::class)->find(5);
-
+            $role = $this->em->getRepository(Role::class)->find(15);
             $user = new User();
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
