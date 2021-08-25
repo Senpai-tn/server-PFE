@@ -88,13 +88,8 @@ class UserController extends AbstractController
         if ($user != null) {
             return $this->json(['message' => 'exist']);
         } else {
-            $role1 = new Role();
-            $role1->setType('TYPE2');
-            $this->em->persist($role1);
-            $this->em->flush();
-
             $role = $this->em->getRepository(Role::class)->find(5);
-            $role2 = $this->em->getRepository(Role::class)->find(15);
+
             $user = new User();
             $user->setFirstName($firstName);
             $user->setLastName($lastName);
@@ -107,7 +102,6 @@ class UserController extends AbstractController
             $user->setDeletedAt(null);
             $user->setExpoId($expo_id);
             $user->addRole($role);
-            $user->addRole($role2);
             $this->em->persist($user);
             $this->em->flush();
             $list = $this->returnUser($user);
