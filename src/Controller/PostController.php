@@ -10,17 +10,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 /**
  * @Route("/post")
  */
 class PostController extends AbstractController
 {
     private $em;
+    private $client;
 
-    public function __construct(EntityManagerInterface $em)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        HttpClientInterface $client
+    ) {
         $this->em = $em;
+        $this->client = $client;
     }
+
+    function returnPost($post)
+    {
+        $list['id'] = $post->getId();
+        $list['title'] = $post->getTitle();
+        $list['description'] = $post->getDescription();
+        $list['images'] = $post->getImages();
+        $list['created_at'] = $post->getCreatedAt();
+        $list['deleted_at'] = $post->getDeletedAt();
+        return $list;
+    }
+
     /**
      * @Route("/", name="posts" , methods={"GET"})
      */
@@ -33,16 +51,16 @@ class PostController extends AbstractController
                 $posts = $this->em->getRepository(Post::class)->findAll();
                 $list = [];
                 foreach ($posts as $key => $post) {
-                    $list[$key]['id'] = $post->getId();
-                    $list[$key]['title'] = $post->getTitle();
-                    $list[$key]['description'] = $post->getDescription();
-                    $list[$key]['images'] = $post->getImages();
-                    $list[$key]['created_at'] = $post->getCreatedAt();
-                    $list[$key]['deleted_at'] = $post->getDeletedAt();
+                    $list[$key] = $this->returnPost($post);
                 }
-                return $this->json($list);
+                return $this->json(['message' => 'success', 'posts' => $list]);
             } else {
-                return new Response('object');
+                $posts = $this->em->getRepository(Post::class)->findAll();
+                $list = [];
+                foreach ($posts as $key => $post) {
+                    $list[$key] = $this->returnPost($post);
+                }
+                return $this->json(['message' => 'success', 'post' => $list]);
             }
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
@@ -78,13 +96,26 @@ class PostController extends AbstractController
             $post->setImages($images);
             $this->em->persist($post);
             $this->em->flush();
-            $list = [];
-            $list['id'] = $post->getId();
-            $list['title'] = $post->getTitle();
-            $list['description'] = $post->getDescription();
-            $list['images'] = $post->getImages();
-            $list['created_at'] = $post->getCreatedAt();
-            $list['deleted_at'] = $post->getDeletedAt();
+            $list = $this->returnPost($post);
+            $response = $this->client->request(
+                'POST',
+                'https://exp.host/--/api/v2/push/send',
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                        'Accept-encoding' => 'gzip, deflate',
+                    ],
+                    'body' => json_encode([
+                        'to' => 'ExponentPushToken[1KrsO_GlyUYNN2LIYkg5gh]',
+                        'sound' => 'default',
+                        'title' => date('H:i:s'),
+                        'body' => 'Tudo bem ?',
+                        'data' => ['someData' => 'goes here'],
+                    ]),
+                ]
+            );
+
             return $this->json(['message' => 'success', 'post' => $list]);
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
@@ -109,13 +140,7 @@ class PostController extends AbstractController
                 $post->setDescription($description);
                 $this->em->persist($post);
                 $this->em->flush();
-                $list = [];
-                $list['id'] = $post->getId();
-                $list['title'] = $post->getTitle();
-                $list['description'] = $post->getDescription();
-                $list['images'] = $post->getImages();
-                $list['created_at'] = $post->getCreatedAt();
-                $list['deleted_at'] = $post->getDeletedAt();
+                $list = $this->returnPost($post);
                 return $this->json(['message' => 'success', 'post' => $list]);
             }
         } catch (\Throwable $th) {
@@ -137,13 +162,7 @@ class PostController extends AbstractController
             } else {
                 $this->em->remove($post);
                 $this->em->flush();
-                $list = [];
-                $list['id'] = $post->getId();
-                $list['title'] = $post->getTitle();
-                $list['description'] = $post->getDescription();
-                $list['images'] = $post->getImages();
-                $list['created_at'] = $post->getCreatedAt();
-                $list['deleted_at'] = $post->getDeletedAt();
+                $list = $this->returnPost($post);
                 return $this->json(['message' => 'success', 'post' => $list]);
             }
         } catch (\Throwable $th) {

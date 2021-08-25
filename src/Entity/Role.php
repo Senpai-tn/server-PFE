@@ -29,6 +29,11 @@ class Role
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $deleted_at;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -74,6 +79,18 @@ class Role
         if ($this->users->removeElement($user)) {
             $user->removeRole($this);
         }
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deleted_at): self
+    {
+        $this->deleted_at = $deleted_at;
 
         return $this;
     }

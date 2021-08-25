@@ -20,6 +20,32 @@ class UserController extends AbstractController
     {
         $this->em = $em;
     }
+
+    function returnUser($user)
+    {
+        $list = [];
+        $list['id'] = $user->getId();
+        $list['firstName'] = $user->getFirstName();
+        $list['lastName'] = $user->getLastName();
+        $list['email'] = $user->getEmail();
+        $list['adress'] = $user->getAdress();
+        $list['tel'] = $user->getTel();
+        $list['login'] = $user->getLogin();
+        $list['password'] = $user->getPassword();
+        $list['expo_id'] = $user->getExpoId();
+        $list['roles'] = [];
+        $i = 0;
+        foreach ($user->getRoles() as $index => $role) {
+            if ($role->getDeletedAt() == null) {
+                $list['roles'][$i] = $role->getType();
+                $i++;
+            }
+        }
+        $list['created_at'] = $user->getCreatedAt();
+        $list['deleted_at'] = $user->getDeletedAt();
+        return $list;
+    }
+
     /**
      * @Route("/", name="list_users",methods={"GET"})
      */
@@ -28,22 +54,9 @@ class UserController extends AbstractController
         $users = $this->em->getRepository(User::class)->findAll();
         $list = [];
         foreach ($users as $key => $user) {
-            $list[$key]['id'] = $user->getId();
-            $list[$key]['firstName'] = $user->getFirstName();
-            $list[$key]['lastName'] = $user->getLastName();
-            $list[$key]['email'] = $user->getEmail();
-            $list[$key]['adress'] = $user->getAdress();
-            $list[$key]['tel'] = $user->getTel();
-            $list[$key]['login'] = $user->getLogin();
-            $list[$key]['password'] = $user->getPassword();
-            $list[$key]['expo_id'] = $user->getExpoId();
-            foreach ($user->getRoles() as $index => $role) {
-                $list[$key]['roles'][$index] = $role->getType();
-            }
-            $list[$key]['created_at'] = $user->getCreatedAt();
-            $list[$key]['deleted_at'] = $user->getDeletedAt();
+            $list[$key] = $this->returnUser($user);
         }
-        return $this->json($list);
+        return $this->json(['message' => 'success', 'users' => $list]);
     }
 
     /**
@@ -97,20 +110,7 @@ class UserController extends AbstractController
             $user->addRole($role2);
             $this->em->persist($user);
             $this->em->flush();
-            $list['id'] = $user->getId();
-            $list['firstName'] = $user->getFirstName();
-            $list['lastName'] = $user->getLastName();
-            $list['email'] = $user->getEmail();
-            $list['adress'] = $user->getAdress();
-            $list['tel'] = $user->getTel();
-            $list['login'] = $user->getLogin();
-            $list['password'] = $user->getPassword();
-            $list['expo_id'] = $user->getExpoId();
-            foreach ($user->getRoles() as $index => $role) {
-                $list['roles'][$index] = $role->getType();
-            }
-            $list['created_at'] = $user->getCreatedAt();
-            $list['deleted_at'] = $user->getDeletedAt();
+            $list = $this->returnUser($user);
             return $this->json(['message' => 'success', 'user' => $list]);
         }
     }
@@ -134,22 +134,55 @@ class UserController extends AbstractController
             } elseif ($user->getDeletedAt() != null) {
                 return $this->json(['message' => 'user blocked']);
             } else {
-                $list['id'] = $user->getId();
-                $list['firstName'] = $user->getFirstName();
-                $list['lastName'] = $user->getLastName();
-                $list['email'] = $user->getEmail();
-                $list['adress'] = $user->getAdress();
-                $list['tel'] = $user->getTel();
-                $list['login'] = $user->getLogin();
-                $list['password'] = $user->getPassword();
-                $list['expo_id'] = $user->getExpoId();
-                foreach ($user->getRoles() as $index => $role) {
-                    $list['roles'][$index] = $role->getType();
-                }
-                $list['created_at'] = $user->getCreatedAt();
-                $list['deleted_at'] = $user->getDeletedAt();
+                $list = $this->returnUser($user);
                 return $this->json(['message' => 'success', 'user' => $list]);
             }
         }
+    }
+
+    /**
+     * @Route("/profile", name="Profile",methods={"GET"})
+     */
+    public function Profile(Request $r): Response
+    {
+        $user = $this->em
+            ->getRepository(User::class)
+            ->find($r->query->get('id'));
+        $list = $this->returnUser($user);
+        return $this->json(['message' => 'success', 'user' => $list]);
+    }
+
+    /**
+     * @Route("/setRole", name="role_manage",methods={"POST"})
+     */
+    public function ManageRole(Request $r): Response
+    {
+        $data = json_decode($r->getContent(), true);
+        $user = $this->em->getRepository(User::class)->find($data['id']);
+        $role = $this->em->getRepository(Role::class)->find($data['role_id']);
+
+        if ($data['action'] == 'remove') {
+            $user->removeRole($role);
+        } else {
+            $user->addRole($role);
+        }
+        $this->em->persist($user);
+        $this->em->flush();
+        $list = $this->returnUser($user);
+        return $this->json(['message' => 'success', 'user' => $list]);
+    }
+
+    /**
+     * @Route("/delete", name="delete_user",methods={"DELETE"})
+     */
+    public function DeleteUser(Request $r): Response
+    {
+        $data = json_decode($r->getContent(), true);
+        $user = $this->em->getRepository(User::class)->find($data['id']);
+        $user->setDeletedAt(null);
+        $this->em->persist($user);
+        $this->em->flush();
+        $list = $this->returnUser($user);
+        return $this->json(['message' => 'success', 'user' => $list]);
     }
 }
