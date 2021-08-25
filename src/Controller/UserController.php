@@ -80,7 +80,7 @@ class UserController extends AbstractController
 
         $password = md5($data['password']);
 
-        $expo_id = '';
+        $expo_id = $data['expo_id'];
 
         $user = $this->em
             ->getRepository(User::class)
