@@ -224,40 +224,44 @@ class UserController extends AbstractController
      */
     public function FunctionName(Request $r): Response
     {
-        $data = json_decode($r->getContent(), true);
+        try {
+            $data = json_decode($r->getContent(), true);
 
-        $firstName = $data['firstName'];
+            $firstName = $data['firstName'];
 
-        $lastName = $data['lastName'];
+            $lastName = $data['lastName'];
 
-        $email = $data['email'];
+            $email = $data['email'];
 
-        $adress = $data['adress'];
+            $adress = $data['adress'];
 
-        $tel = $data['tel'];
+            $tel = $data['tel'];
 
-        $login = $data['login'];
+            $login = $data['login'];
 
-        $password = md5($data['password']);
+            $password = md5($data['password']);
 
-        $expo_id = $data['expo_id'];
+            $user = $this->em
+                ->getRepository(User::class)
+                ->findOneBy(['login' => $login]);
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+            $user->setEmail($email);
+            $user->setAdress($adress);
+            $user->setTel($tel);
+            $user->setLogin($login);
+            if ($data['password'] != '') {
+                $user->setPassword($password);
+            }
+            $user->setCreatedAt(new DateTimeImmutable());
+            $user->setDeletedAt(null);
 
-        $user = $this->em
-            ->getRepository(User::class)
-            ->findOneBy(['login' => $login]);
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setEmail($email);
-        $user->setAdress($adress);
-        $user->setTel($tel);
-        $user->setLogin($login);
-        $user->setPassword($password);
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->setDeletedAt(null);
-        $user->setExpoId($expo_id);
-        $this->em->persist($user);
-        $this->em->flush();
-        $list = $this->returnUser($user);
-        return $this->json(['message' => 'success', 'user' => $list]);
+            $this->em->persist($user);
+            $this->em->flush();
+            $list = $this->returnUser($user);
+            return $this->json(['message' => 'success', 'user' => $list]);
+        } catch (\Throwable $th) {
+            return $this->json(['message' => 'error']);
+        }
     }
 }
