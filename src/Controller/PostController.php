@@ -70,7 +70,7 @@ class PostController extends AbstractController
     /**
      * @Route("/", name="add_post",methods={"POST"})
      */
-    public function FunctionName(Request $r): Response
+    public function Add(Request $r): Response
     {
         try {
             $post = new Post();
@@ -97,24 +97,27 @@ class PostController extends AbstractController
             $this->em->persist($post);
             $this->em->flush();
             $list = $this->returnPost($post);
-            $response = $this->client->request(
-                'POST',
-                'https://exp.host/--/api/v2/push/send',
-                [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
-                        'Accept-encoding' => 'gzip, deflate',
-                    ],
-                    'body' => json_encode([
-                        'to' => 'ExponentPushToken[1KrsO_GlyUYNN2LIYkg5gh]',
-                        'sound' => 'default',
-                        'title' => date('H:i:s'),
-                        'body' => 'Tudo bem ?',
-                        'data' => ['someData' => 'goes here'],
-                    ]),
-                ]
-            );
+            $users = $this->em->getRepository(User::class)->findAll();
+            foreach ($users as $key => $user) {
+                $response = $this->client->request(
+                    'POST',
+                    'https://exp.host/--/api/v2/push/send',
+                    [
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'Accept' => 'application/json',
+                            'Accept-encoding' => 'gzip, deflate',
+                        ],
+                        'body' => json_encode([
+                            'to' => $user->getExpoId(),
+                            'sound' => 'default',
+                            'title' => date('H:i:s'),
+                            'body' => 'Tudo bem ?',
+                            'data' => ['someData' => 'goes here'],
+                        ]),
+                    ]
+                );
+            }
 
             return $this->json(['message' => 'success', 'post' => $list]);
         } catch (\Throwable $th) {
