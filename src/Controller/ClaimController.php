@@ -2,19 +2,58 @@
 
 namespace App\Controller;
 
+use App\Entity\Claim;
+use App\Entity\User;
+use DateTime;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/claim")
+ */
 class ClaimController extends AbstractController
 {
+    private $em;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
     /**
-     * @Route("/claim", name="claim")
+     * @Route("/", name="claim" ,methods={"GET"})
      */
     public function index(): Response
     {
         return $this->render('claim/index.html.twig', [
             'controller_name' => 'ClaimController',
         ]);
+    }
+
+    /**
+     * @Route("/", name="add_claim" ,methods={"POST"})
+     */
+    public function Add(Request $r): Response
+    {
+        try {
+            $data = json_decode($r->getContent(), true);
+            $user = $this->em
+                ->getRepository(User::class)
+                ->find($data['user_id']);
+            $claim = new Claim();
+            $claim->setCreatedAt(new DateTimeImmutable());
+            $claim->setDescription('DESC');
+            $claim->setImages(['f2cc45d6209c8f6105cb06e18bce9bf4.jpg']);
+            $claim->setState('Sent');
+            $claim->setUser($user);
+            $this->em->persist($claim);
+            $this->em->flush();
+            return new Response('test');
+        } catch (\Throwable $th) {
+        }
     }
 }

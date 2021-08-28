@@ -74,9 +74,15 @@ class User
      */
     private $roles;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Claim::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $claims;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->claims = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,6 +230,36 @@ class User
     public function removeRole(Role $role): self
     {
         $this->roles->removeElement($role);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Claim[]
+     */
+    public function getClaims(): Collection
+    {
+        return $this->claims;
+    }
+
+    public function addClaim(Claim $claim): self
+    {
+        if (!$this->claims->contains($claim)) {
+            $this->claims[] = $claim;
+            $claim->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClaim(Claim $claim): self
+    {
+        if ($this->claims->removeElement($claim)) {
+            // set the owning side to null (unless already changed)
+            if ($claim->getUser() === $this) {
+                $claim->setUser(null);
+            }
+        }
 
         return $this;
     }

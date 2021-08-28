@@ -35,13 +35,24 @@ class UserController extends AbstractController
         $list['password'] = $user->getPassword();
         $list['expo_id'] = $user->getExpoId();
         $list['roles'] = [];
+        $list['claims'] = [];
         $i = 0;
-        foreach ($user->getRoles() as $index => $role) {
+        foreach ($user->getRoles() as $role) {
             if ($role->getDeletedAt() == null) {
                 $list['roles'][$i] = $role->getType();
                 $i++;
             }
         }
+        $i = 0;
+        foreach ($user->getClaims() as $claim) {
+            $list['claims'][$i]['description'] = $claim->getDescription();
+            $list['claims'][$i]['created_at'] = $claim->getCreatedAt();
+            $list['claims'][$i]['updated_at'] = $claim->getUpdatedAt();
+            $list['claims'][$i]['state'] = $claim->getState();
+            $list['claims'][$i]['description'] = $claim->getImages();
+            $i++;
+        }
+
         $list['created_at'] = $user->getCreatedAt();
         $list['deleted_at'] = $user->getDeletedAt();
         return $list;
