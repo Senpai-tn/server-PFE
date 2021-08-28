@@ -49,7 +49,7 @@ class UserController extends AbstractController
             $list['claims'][$i]['created_at'] = $claim->getCreatedAt();
             $list['claims'][$i]['updated_at'] = $claim->getUpdatedAt();
             $list['claims'][$i]['state'] = $claim->getState();
-            $list['claims'][$i]['description'] = $claim->getImages();
+            $list['claims'][$i]['images'] = $claim->getImages();
             $i++;
         }
 
