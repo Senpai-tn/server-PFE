@@ -107,24 +107,7 @@ class ClaimController extends AbstractController
             $claim->setUpdatedAt(new DateTimeImmutable());
             $this->em->persist($claim);
             $this->em->flush();
-            return new Response('test');
-        } catch (\Throwable $th) {
-        }
-    }
-
-    /**
-     * @Route("/", name="delete_claim",methods={"DELETE"})
-     */
-    public function Delete(Request $r): Response
-    {
-        try {
-            $data = json_decode($r->getContent(), true);
-            $claim = $this->em->getRepository(Claim::class)->find($data['id']);
-            $claim->setState($data['state']);
-            $claim->setUpdatedAt(new DateTimeImmutable());
-            $this->em->persist($claim);
-            $this->em->flush();
-            return new Response('test');
+            return $this->json(['message' => 'success', 'claim' => $claim]);
         } catch (\Throwable $th) {
         }
     }
