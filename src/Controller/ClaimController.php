@@ -107,7 +107,8 @@ class ClaimController extends AbstractController
             //$claim->setUpdatedAt(new DateTimeImmutable());
             //$this->em->persist($claim);
             //$this->em->flush();
-            return $this->json(['message' => 'success', 'claim' => $claim]);
+            $list = $this->returnClaim($claim);
+            return $this->json(['message' => 'success', 'claim' => $list]);
         } catch (\Throwable $th) {
         }
     }
