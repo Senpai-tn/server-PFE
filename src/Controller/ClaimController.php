@@ -71,6 +71,7 @@ class ClaimController extends AbstractController
             $claim = new Claim();
             $claim->setCreatedAt(new DateTimeImmutable());
             $claim->setDescription($data['description']);
+            $claim->setState('sent');
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
@@ -84,14 +85,13 @@ class ClaimController extends AbstractController
                 $file->move($this->getParameter('images_directory'), $filename);
                 unset($filename);
             }
-
             $claim->setImages($images);
-            $claim->setState('Sent');
             $claim->setUser($user);
             $this->em->persist($claim);
             $this->em->flush();
             return new Response('test');
         } catch (\Throwable $th) {
+            return $this->json(['message' => $th->getMessage()]);
         }
     }
 
