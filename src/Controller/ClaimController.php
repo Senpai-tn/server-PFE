@@ -42,11 +42,10 @@ class ClaimController extends AbstractController
      */
     public function index(Request $r): Response
     {
-        $data = json_decode($r->getContent(), true);
-        if (isset($data['user_id'])) {
+        if ($r->query->get('user_id') != null) {
             $claims = $this->em
                 ->getRepository(Claim::class)
-                ->findBy(['user' => $data['user_id']]);
+                ->findBy(['user' => $r->query->get('user_id')]);
             $list = [];
             foreach ($claims as $key => $claim) {
                 $list[$key] = $this->returnClaim($claim);
