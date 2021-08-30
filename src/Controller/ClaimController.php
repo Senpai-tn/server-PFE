@@ -103,10 +103,10 @@ class ClaimController extends AbstractController
         try {
             $data = json_decode($r->getContent(), true);
             $claim = $this->em->getRepository(Claim::class)->find($data['id']);
-            //$claim->setState($data['state']);
-            //$claim->setUpdatedAt(new DateTimeImmutable());
-            //$this->em->persist($claim);
-            //$this->em->flush();
+            $claim->setState($data['state']);
+            $claim->setUpdatedAt(new DateTimeImmutable());
+            $this->em->persist($claim);
+            $this->em->flush();
             $list = $this->returnClaim($claim);
             return $this->json(['message' => 'success', 'claim' => $list]);
         } catch (\Throwable $th) {
