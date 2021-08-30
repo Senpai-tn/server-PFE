@@ -46,9 +46,7 @@ class PostController extends AbstractController
     public function index(Request $r): Response
     {
         try {
-            $data = json_decode($r->getContent(), true);
-
-            if (!isset($data['id'])) {
+            if ($r->query->get('id') == null) {
                 $posts = $this->em->getRepository(Post::class)->findAll();
                 $list = [];
                 foreach ($posts as $key => $post) {
@@ -56,11 +54,10 @@ class PostController extends AbstractController
                 }
                 return $this->json(['message' => 'success', 'posts' => $list]);
             } else {
-                $posts = $this->em->getRepository(Post::class)->findAll();
-                $list = [];
-                foreach ($posts as $key => $post) {
-                    $list[$key] = $this->returnPost($post);
-                }
+                $post = $this->em
+                    ->getRepository(Post::class)
+                    ->find($r->query->get('id'));
+                $list = $this->returnPost($post);
                 return $this->json(['message' => 'success', 'post' => $list]);
             }
         } catch (\Throwable $th) {
