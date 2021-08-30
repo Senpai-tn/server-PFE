@@ -70,8 +70,22 @@ class ClaimController extends AbstractController
                 ->find($data['user_id']);
             $claim = new Claim();
             $claim->setCreatedAt(new DateTimeImmutable());
-            $claim->setDescription('DESC');
-            $claim->setImages(['f2cc45d6209c8f6105cb06e18bce9bf4.jpg']);
+            $claim->setDescription($data['description']);
+            $files = [];
+            $i = 1;
+            while ($r->files->get('file' . $i) != null) {
+                $files[$i] = $r->files->get('file' . $i);
+                $i++;
+            }
+            $images = [];
+            foreach ($files as $file) {
+                $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                array_push($images, $filename);
+                $file->move($this->getParameter('images_directory'), $filename);
+                unset($filename);
+            }
+
+            $claim->setImages($images);
             $claim->setState('Sent');
             $claim->setUser($user);
             $this->em->persist($claim);
@@ -84,8 +98,34 @@ class ClaimController extends AbstractController
     /**
      * @Route("/", name="update_claim" ,methods={"PUT"})
      */
-    public function Update(): Response
+    public function Update(Request $r): Response
     {
-        return $this->render('$0.html.twig', []);
+        try {
+            $data = json_decode($r->getContent(), true);
+            $claim = $this->em->getRepository(Claim::class)->find($data['id']);
+            $claim->setState($data['state']);
+            $claim->setUpdatedAt(new DateTimeImmutable());
+            $this->em->persist($claim);
+            $this->em->flush();
+            return new Response('test');
+        } catch (\Throwable $th) {
+        }
+    }
+
+    /**
+     * @Route("/", name="delete_claim",methods={"DELETE"})
+     */
+    public function Delete(Request $r): Response
+    {
+        try {
+            $data = json_decode($r->getContent(), true);
+            $claim = $this->em->getRepository(Claim::class)->find($data['id']);
+            $claim->setState($data['state']);
+            $claim->setUpdatedAt(new DateTimeImmutable());
+            $this->em->persist($claim);
+            $this->em->flush();
+            return new Response('test');
+        } catch (\Throwable $th) {
+        }
     }
 }

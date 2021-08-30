@@ -76,7 +76,6 @@ class PostController extends AbstractController
             $post->setDescription('Description1');
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
-            //$data = json_decode($r->getContent(), true);
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
