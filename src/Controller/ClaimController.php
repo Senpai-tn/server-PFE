@@ -52,10 +52,11 @@ class ClaimController extends AbstractController
                 $list[$key] = $this->returnClaim($claim);
             }
             return $this->json(['message' => 'success', 'claim' => $list]);
+        } else {
+            return $this->render('claim/index.html.twig', [
+                'controller_name' => 'ClaimController',
+            ]);
         }
-        return $this->render('claim/index.html.twig', [
-            'controller_name' => 'ClaimController',
-        ]);
     }
 
     /**
@@ -82,7 +83,7 @@ class ClaimController extends AbstractController
     }
 
     /**
-     * @Route("/", name="add_claim" ,methods={"PUT"})
+     * @Route("/", name="update_claim" ,methods={"PUT"})
      */
     public function Update(): Response
     {
