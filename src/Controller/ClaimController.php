@@ -24,11 +24,35 @@ class ClaimController extends AbstractController
         $this->em = $em;
     }
 
+    function returnClaim($claim)
+    {
+        $list = [];
+
+        $list['id'] = $claim->getId();
+        $list['description'] = $claim->getDescription();
+        $list['created_at'] = $claim->getCreatedAt();
+        $list['updated_at'] = $claim->getUpdatedAt();
+        $list['state'] = $claim->getState();
+        $list['images'] = $claim->getImages();
+        return $list;
+    }
+
     /**
      * @Route("/", name="claim" ,methods={"GET"})
      */
-    public function index(): Response
+    public function index(Request $r): Response
     {
+        $data = json_decode($r->getContent(), true);
+        if (isset($data['user_id'])) {
+            $claims = $this->em
+                ->getRepository(Claim::class)
+                ->findBy(['user' => $data['user_id']]);
+            $list = [];
+            foreach ($claims as $key => $claim) {
+                $list[$key] = $this->returnClaim($claim);
+            }
+            return $this->json(['message' => 'success', 'claim' => $list]);
+        }
         return $this->render('claim/index.html.twig', [
             'controller_name' => 'ClaimController',
         ]);
@@ -55,5 +79,13 @@ class ClaimController extends AbstractController
             return new Response('test');
         } catch (\Throwable $th) {
         }
+    }
+
+    /**
+     * @Route("/", name="add_claim" ,methods={"PUT"})
+     */
+    public function Update(): Response
+    {
+        return $this->render('$0.html.twig', []);
     }
 }
