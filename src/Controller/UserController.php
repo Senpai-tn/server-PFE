@@ -71,6 +71,18 @@ class UserController extends AbstractController
         return $this->json(['message' => 'success', 'users' => $list]);
     }
 
+    /*
+{
+    "login":"M1",
+    "firstName":"M1",
+    "lastName":"M1",
+    "email":"M1",
+    "adress":"M1",
+    "tel":"M1",
+    "password":"M1",
+    "expo_id":"M1"
+}
+*/
     /**
      * @Route("/register", name="register",methods={"POST"})
      */
@@ -117,8 +129,11 @@ class UserController extends AbstractController
             $user->addRole($role);
             $this->em->persist($user);
             $this->em->flush();
-            $list = $this->returnUser($user);
-            return $this->json(['message' => 'success', 'user' => $list]);
+
+            return $this->json([
+                'message' => 'success',
+                'user' => $this->returnUser($user),
+            ]);
         }
     }
 
@@ -141,8 +156,10 @@ class UserController extends AbstractController
             } elseif ($user->getDeletedAt() != null) {
                 return $this->json(['message' => 'user blocked']);
             } else {
-                $list = $this->returnUser($user);
-                return $this->json(['message' => 'success', 'user' => $list]);
+                return $this->json([
+                    'message' => 'success',
+                    'user' => $this->returnUser($user),
+                ]);
             }
         }
     }
@@ -155,8 +172,10 @@ class UserController extends AbstractController
         $user = $this->em
             ->getRepository(User::class)
             ->find($r->query->get('id'));
-        $list = $this->returnUser($user);
-        return $this->json(['message' => 'success', 'user' => $list]);
+        return $this->json([
+            'message' => 'success',
+            'user' => $this->returnUser($user),
+        ]);
     }
 
     /**
@@ -175,8 +194,10 @@ class UserController extends AbstractController
         }
         $this->em->persist($user);
         $this->em->flush();
-        $list = $this->returnUser($user);
-        return $this->json(['message' => 'success', 'user' => $list]);
+        return $this->json([
+            'message' => 'success',
+            'user' => $this->returnUser($user),
+        ]);
     }
 
     /**
@@ -186,11 +207,14 @@ class UserController extends AbstractController
     {
         $data = json_decode($r->getContent(), true);
         $user = $this->em->getRepository(User::class)->find($data['id']);
-        $user->setDeletedAt(null);
+        $user->setDeletedAt(new DateTimeImmutable());
         $this->em->persist($user);
         $this->em->flush();
-        $list = $this->returnUser($user);
-        return $this->json(['message' => 'success', 'user' => $list]);
+
+        return $this->json([
+            'message' => 'success',
+            'user' => $this->returnUser($user),
+        ]);
     }
 
     /**
@@ -264,13 +288,16 @@ class UserController extends AbstractController
             if ($data['password'] != '') {
                 $user->setPassword($password);
             }
-            $user->setCreatedAt(new DateTimeImmutable());
+
             $user->setDeletedAt(null);
 
             $this->em->persist($user);
             $this->em->flush();
-            $list = $this->returnUser($user);
-            return $this->json(['message' => 'success', 'user' => $list]);
+
+            return $this->json([
+                'message' => 'success',
+                'user' => $this->returnUser($user),
+            ]);
         } catch (\Throwable $th) {
             return $this->json(['message' => 'error']);
         }

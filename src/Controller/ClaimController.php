@@ -52,9 +52,12 @@ class ClaimController extends AbstractController
             }
             return $this->json(['message' => 'success', 'claim' => $list]);
         } else {
-            return $this->render('claim/index.html.twig', [
-                'controller_name' => 'ClaimController',
-            ]);
+            $claims = $this->em->getRepository(Claim::class)->findAll();
+            $list = [];
+            foreach ($claims as $key => $claim) {
+                $list[$key] = $this->returnClaim($claim);
+            }
+            return $this->json(['message' => 'success', 'claim' => $list]);
         }
     }
 
