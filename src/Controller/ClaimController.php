@@ -76,7 +76,7 @@ class ClaimController extends AbstractController
                 $i++;
             }
             return new Response(
-                'user : ' . $r->get_headers['user_id'] . ' i:' . $i
+                'user : ' . $r->headers->get('user_id') . ' i:' . $i
             );
             $images = [];
             foreach ($files as $file) {
