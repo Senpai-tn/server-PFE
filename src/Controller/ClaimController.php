@@ -68,7 +68,7 @@ class ClaimController extends AbstractController
     {
         try {
             $data = json_decode($r->getContent(), true);
-            return new Response('user : ' . $r->headers->get('user_id'));
+            return new Response('user : ' . $r->request->get('user_id'));
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
