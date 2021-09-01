@@ -92,7 +92,10 @@ class ClaimController extends AbstractController
             $claim->setUser($user);
             $this->em->persist($claim);
             $this->em->flush();
-            return new Response('test');
+            return $this->json([
+                'message' => 'success',
+                'claim' => $this->returnClaim($claim),
+            ]);
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
         }
