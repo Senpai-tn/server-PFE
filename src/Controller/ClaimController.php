@@ -68,7 +68,7 @@ class ClaimController extends AbstractController
     {
         try {
             $data = json_decode($r->getContent(), true);
-            return new Response('user : ' . $data['user_id']);
+
             $user = $this->em
                 ->getRepository(User::class)
                 ->find($data['user_id']);
@@ -82,6 +82,7 @@ class ClaimController extends AbstractController
                 $files[$i] = $r->files->get('file' . $i);
                 $i++;
             }
+            return new Response('user : ' . $data['user_id'] . ' i:' . $i);
             $images = [];
             foreach ($files as $file) {
                 $filename = md5(uniqid()) . '.' . $file->guessExtension();
