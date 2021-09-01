@@ -38,9 +38,12 @@ class RoleController extends AbstractController
         $data = json_decode($r->getContent(), true);
         if (isset($data['id'])) {
             $role = $this->em->getRepository(Role::class)->find($data['id']);
-            $list = $this->returnRole($role);
-            return $this->json(['message' => 'success', 'role' => $list]);
+            return $this->json([
+                'message' => 'success',
+                'role' => $this->returnRole($role),
+            ]);
         }
+
         $roles = $this->em->getRepository(Role::class)->findAll();
         $list = [];
         foreach ($roles as $key => $role) {
@@ -59,8 +62,10 @@ class RoleController extends AbstractController
         $role->setType($data['type']);
         $this->em->persist($role);
         $this->em->flush();
-        $list = $this->returnRole($role);
-        return $this->json(['message' => 'success', 'role' => $list]);
+        return $this->json([
+            'message' => 'success',
+            'role' => $this->returnRole($role),
+        ]);
     }
 
     /**
@@ -71,11 +76,14 @@ class RoleController extends AbstractController
         $data = json_decode($r->getContent(), true);
         $role = $this->em->getRepository(Role::class)->find($data['id']);
         $role->setType($data['type']);
-        $role->setDeletedAt(new DateTimeImmutable());
+        $role->setDeletedAt(null);
         $this->em->persist($role);
         $this->em->flush();
-        $list = $this->returnRole($role);
-        return $this->json(['message' => 'success', 'role' => $list]);
+
+        return $this->json([
+            'message' => 'success',
+            'role' => $this->returnRole($role),
+        ]);
     }
 
     /**
@@ -88,7 +96,10 @@ class RoleController extends AbstractController
         $role->setDeletedAt(new DateTimeImmutable());
         $this->em->persist($role);
         $this->em->flush();
-        $list = $this->returnRole($role);
-        return $this->json(['message' => 'success', 'role' => $list]);
+
+        return $this->json([
+            'message' => 'success',
+            'role' => $this->returnRole($role),
+        ]);
     }
 }

@@ -68,9 +68,7 @@ class ClaimController extends AbstractController
     {
         try {
             $data = json_decode($r->getContent(), true);
-            $user = $this->em
-                ->getRepository(User::class)
-                ->find($data['user_id']);
+            $user = $this->em->getRepository(User::class)->find(125);
             $claim = new Claim();
             $claim->setCreatedAt(new DateTimeImmutable());
             $claim->setDescription($data['description']);
@@ -110,8 +108,10 @@ class ClaimController extends AbstractController
             $claim->setUpdatedAt(new DateTimeImmutable());
             $this->em->persist($claim);
             $this->em->flush();
-            $list = $this->returnClaim($claim);
-            return $this->json(['message' => 'success', 'claim' => $list]);
+            return $this->json([
+                'message' => 'success',
+                'claim' => $this->returnClaim($claim),
+            ]);
         } catch (\Throwable $th) {
         }
     }

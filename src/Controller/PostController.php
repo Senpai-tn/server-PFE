@@ -57,8 +57,11 @@ class PostController extends AbstractController
                 $post = $this->em
                     ->getRepository(Post::class)
                     ->find($r->query->get('id'));
-                $list = $this->returnPost($post);
-                return $this->json(['message' => 'success', 'post' => $list]);
+
+                return $this->json([
+                    'message' => 'success',
+                    'post' => $this->returnPost($post),
+                ]);
             }
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
@@ -71,9 +74,10 @@ class PostController extends AbstractController
     public function Add(Request $r): Response
     {
         try {
+            $data = json_decode($r->getContent(), true);
             $post = new Post();
-            $post->setTitle('title');
-            $post->setDescription('Description1');
+            $post->setTitle($data['title']);
+            $post->setDescription($data['Description']);
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
             $files = [];
@@ -93,7 +97,7 @@ class PostController extends AbstractController
             $post->setImages($images);
             $this->em->persist($post);
             $this->em->flush();
-            $list = $this->returnPost($post);
+
             $users = $this->em->getRepository(User::class)->findAll();
             foreach ($users as $key => $user) {
                 $response = $this->client->request(
@@ -116,7 +120,10 @@ class PostController extends AbstractController
                 );
             }
 
-            return $this->json(['message' => 'success', 'post' => $list]);
+            return $this->json([
+                'message' => 'success',
+                'post' => $this->returnPost($post),
+            ]);
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
         }
@@ -140,8 +147,11 @@ class PostController extends AbstractController
                 $post->setDescription($description);
                 $this->em->persist($post);
                 $this->em->flush();
-                $list = $this->returnPost($post);
-                return $this->json(['message' => 'success', 'post' => $list]);
+
+                return $this->json([
+                    'message' => 'success',
+                    'post' => $this->returnPost($post),
+                ]);
             }
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
@@ -160,10 +170,14 @@ class PostController extends AbstractController
             if ($post == null) {
                 return $this->json(['message' => 'not found']);
             } else {
-                $this->em->remove($post);
+                $post->setDeletedAt(new DateTimeImmutable());
+                $this->em->persist($post);
                 $this->em->flush();
-                $list = $this->returnPost($post);
-                return $this->json(['message' => 'success', 'post' => $list]);
+
+                return $this->json([
+                    'message' => 'success',
+                    'post' => $this->returnPost($post),
+                ]);
             }
         } catch (\Throwable $th) {
             return $this->json(['message' => $th->getMessage()]);
