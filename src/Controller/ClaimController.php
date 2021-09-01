@@ -75,7 +75,9 @@ class ClaimController extends AbstractController
                 $files[$i] = $r->files->get('file' . $i);
                 $i++;
             }
-            return new Response('user : ' . $data['user_id'] . ' i:' . $i);
+            return new Response(
+                'user : ' . $r->get_headers['user_id'] . ' i:' . $i
+            );
             $images = [];
             foreach ($files as $file) {
                 $filename = md5(uniqid()) . '.' . $file->guessExtension();
