@@ -68,6 +68,7 @@ class ClaimController extends AbstractController
     {
         try {
             $data = json_decode($r->getContent(), true);
+            return new Response('user : ' . $data['user_id']);
             $user = $this->em
                 ->getRepository(User::class)
                 ->find($data['user_id']);
