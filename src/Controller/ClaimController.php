@@ -69,10 +69,6 @@ class ClaimController extends AbstractController
         try {
             $data = json_decode($r->getContent(), true);
 
-            $claim = new Claim();
-            $claim->setCreatedAt(new DateTimeImmutable());
-            $claim->setDescription($data['description']);
-            $claim->setState('sent');
             $files = [];
             $i = 1;
             while ($r->files->get('file' . $i) != null) {
@@ -90,6 +86,10 @@ class ClaimController extends AbstractController
             $user = $this->em
                 ->getRepository(User::class)
                 ->find($data['user_id']);
+            $claim = new Claim();
+            $claim->setCreatedAt(new DateTimeImmutable());
+            $claim->setDescription($data['description']);
+            $claim->setState('sent');
             $claim->setImages($images);
             $claim->setUser($user);
             $this->em->persist($claim);
