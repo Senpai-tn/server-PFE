@@ -145,6 +145,7 @@ class PostController extends AbstractController
             } else {
                 $post->setTitle($title);
                 $post->setDescription($description);
+                $post->setDeletedAt(null);
                 $this->em->persist($post);
                 $this->em->flush();
 
