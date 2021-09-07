@@ -74,10 +74,9 @@ class PostController extends AbstractController
     public function Add(Request $r): Response
     {
         try {
-            $data = json_decode($r->getContent(), true);
             $post = new Post();
-            $post->setTitle($data['title']);
-            $post->setDescription($data['Description']);
+            $post->setTitle($r->request->get('title'));
+            $post->setDescription($r->request->get('Description'));
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
             $files = [];
