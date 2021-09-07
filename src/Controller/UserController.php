@@ -233,7 +233,7 @@ class UserController extends AbstractController
             } else {
                 $users = $this->em->getRepository(User::class)->findAll();
                 foreach ($users as $user) {
-                    $this->em->remove($users);
+                    $this->em->remove($user);
                 }
             }
             if (isset($data['role_id'])) {
