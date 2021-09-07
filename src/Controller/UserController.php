@@ -223,54 +223,58 @@ class UserController extends AbstractController
      */
     public function delete(Request $r): Response
     {
-        $data = json_decode($r->getContent(), true);
-        if (isset($data['user_id'])) {
-            $user = $this->em
-                ->getRepository(User::class)
-                ->find($data['user_id']);
-            $this->em->remove($user);
-        } else {
-            $users = $this->em->getRepository(User::class)->findAll();
-            foreach ($users as $user) {
-                $this->em->remove($users);
+        try {
+            $data = json_decode($r->getContent(), true);
+            if (isset($data['user_id'])) {
+                $user = $this->em
+                    ->getRepository(User::class)
+                    ->find($data['user_id']);
+                $this->em->remove($user);
+            } else {
+                $users = $this->em->getRepository(User::class)->findAll();
+                foreach ($users as $user) {
+                    $this->em->remove($users);
+                }
             }
-        }
-        if (isset($data['role_id'])) {
-            $role = $this->em
-                ->getRepository(Role::class)
-                ->find($data['role_id']);
-            $this->em->remove($role);
-        } else {
-            $roles = $this->em->getRepository(Role::class)->findAll();
-            foreach ($roles as $role) {
+            if (isset($data['role_id'])) {
+                $role = $this->em
+                    ->getRepository(Role::class)
+                    ->find($data['role_id']);
                 $this->em->remove($role);
+            } else {
+                $roles = $this->em->getRepository(Role::class)->findAll();
+                foreach ($roles as $role) {
+                    $this->em->remove($role);
+                }
             }
-        }
-        if (isset($data['post_id'])) {
-            $post = $this->em
-                ->getRepository(Post::class)
-                ->find($data['post_id']);
-            $this->em->remove($post);
-        } else {
-            $posts = $this->em->getRepository(Post::class)->findAll();
-            foreach ($posts as $post) {
+            if (isset($data['post_id'])) {
+                $post = $this->em
+                    ->getRepository(Post::class)
+                    ->find($data['post_id']);
                 $this->em->remove($post);
+            } else {
+                $posts = $this->em->getRepository(Post::class)->findAll();
+                foreach ($posts as $post) {
+                    $this->em->remove($post);
+                }
             }
-        }
 
-        if (isset($data['claim_id'])) {
-            $claim = $this->em
-                ->getRepository(Claim::class)
-                ->find($data['claim_id']);
-            $this->em->remove($claim);
-        } else {
-            $claims = $this->em->getRepository(Claim::class)->findAll();
-            foreach ($claims as $claim) {
+            if (isset($data['claim_id'])) {
+                $claim = $this->em
+                    ->getRepository(Claim::class)
+                    ->find($data['claim_id']);
                 $this->em->remove($claim);
+            } else {
+                $claims = $this->em->getRepository(Claim::class)->findAll();
+                foreach ($claims as $claim) {
+                    $this->em->remove($claim);
+                }
             }
+            $this->em->flush();
+            return new Response('deleted');
+        } catch (\Throwable $th) {
+            return new Response($th);
         }
-        $this->em->flush();
-        return new Response('deleted');
     }
 
     /**
