@@ -229,42 +229,33 @@ class UserController extends AbstractController
                 ->getRepository(User::class)
                 ->find($data['user_id']);
             $this->em->remove($user);
-            $this->em->flush();
         } else {
             $users = $this->em->getRepository(User::class)->findAll();
             foreach ($users as $user) {
                 $this->em->remove($users);
             }
-
-            $this->em->flush();
         }
         if (isset($data['role_id'])) {
             $role = $this->em
                 ->getRepository(Role::class)
                 ->find($data['role_id']);
             $this->em->remove($role);
-            $this->em->flush();
         } else {
             $roles = $this->em->getRepository(Role::class)->findAll();
             foreach ($roles as $role) {
                 $this->em->remove($role);
             }
-
-            $this->em->flush();
         }
         if (isset($data['post_id'])) {
             $post = $this->em
                 ->getRepository(Post::class)
                 ->find($data['post_id']);
             $this->em->remove($post);
-            $this->em->flush();
         } else {
             $posts = $this->em->getRepository(Post::class)->findAll();
             foreach ($posts as $post) {
                 $this->em->remove($post);
             }
-
-            $this->em->flush();
         }
 
         if (isset($data['claim_id'])) {
@@ -272,15 +263,13 @@ class UserController extends AbstractController
                 ->getRepository(Claim::class)
                 ->find($data['claim_id']);
             $this->em->remove($claim);
-            $this->em->flush();
         } else {
             $claims = $this->em->getRepository(Claim::class)->findAll();
             foreach ($claims as $claim) {
                 $this->em->remove($claim);
             }
-
-            $this->em->flush();
         }
+        $this->em->flush();
         return new Response('deleted');
     }
 
