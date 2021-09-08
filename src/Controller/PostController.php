@@ -134,14 +134,31 @@ class PostController extends AbstractController
     public function Update(Request $r): Response
     {
         try {
-            $data = json_decode($r->getContent(), true);
-            $id = $data['id'];
-            $title = $data['title'];
-            $description = $data['description'];
+            $id = $r->request->get('id');
+            $title = $r->request->get('title');
+            $description = $r->request->get('description');
             $post = $this->em->getRepository(Post::class)->find($id);
             if ($post == null) {
                 return $this->json(['message' => 'not found']);
             } else {
+                $files = [];
+                $i = 1;
+                while ($r->files->get('file' . $i) != null) {
+                    $files[$i] = $r->files->get('file' . $i);
+                    $i++;
+                }
+                $images = [];
+                foreach ($files as $file) {
+                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
+                    array_push($images, $filename);
+                    $file->move(
+                        $this->getParameter('images_directory'),
+                        $filename
+                    );
+                    unset($filename);
+                }
+
+                $post->setImages($images);
                 $post->setTitle($title);
                 $post->setDescription($description);
                 $post->setDeletedAt(null);
