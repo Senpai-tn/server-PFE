@@ -141,24 +141,6 @@ class PostController extends AbstractController
             if ($post == null) {
                 return $this->json(['message' => 'not found']);
             } else {
-                $files = [];
-                $i = 1;
-                while ($r->files->get('file' . $i) != null) {
-                    $files[$i] = $r->files->get('file' . $i);
-                    $i++;
-                }
-                $images = [];
-                foreach ($files as $file) {
-                    $filename = md5(uniqid()) . '.' . $file->guessExtension();
-                    array_push($images, $filename);
-                    $file->move(
-                        $this->getParameter('images_directory'),
-                        $filename
-                    );
-                    unset($filename);
-                }
-
-                $post->setImages($images);
                 $post->setTitle($title);
                 $post->setDescription($description);
                 $post->setDeletedAt(null);
