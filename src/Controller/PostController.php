@@ -134,9 +134,10 @@ class PostController extends AbstractController
     public function Update(Request $r): Response
     {
         try {
-            $id = $r->request->get('id');
-            $title = $r->request->get('title');
-            $description = $r->request->get('description');
+            $data = json_decode($r->getContent(), true);
+            $id = $data['id'];
+            $title = $data['title'];
+            $description = $data['description'];
             $post = $this->em->getRepository(Post::class)->find($id);
             if ($post == null) {
                 return $this->json(['message' => 'not found']);
