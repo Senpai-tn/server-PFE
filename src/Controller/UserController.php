@@ -334,7 +334,7 @@ class UserController extends AbstractController
                 'user' => $this->returnUser($user),
             ]);
         } catch (\Throwable $th) {
-            return $this->json(['message' => 'error']);
+            return new Response($th);
         }
     }
 }
