@@ -214,16 +214,20 @@ class UserController extends AbstractController
      */
     public function DeleteUser(Request $r): Response
     {
-        $data = json_decode($r->getContent(), true);
-        $user = $this->em->getRepository(User::class)->find($data['id']);
-        $user->setDeletedAt(new DateTimeImmutable());
-        $this->em->persist($user);
-        $this->em->flush();
+        try {
+            $data = json_decode($r->getContent(), true);
+            $user = $this->em->getRepository(User::class)->find($data['id']);
+            $user->setDeletedAt(new DateTimeImmutable());
+            $this->em->persist($user);
+            $this->em->flush();
 
-        return $this->json([
-            'message' => 'success',
-            'user' => $this->returnUser($user),
-        ]);
+            return $this->json([
+                'message' => 'success',
+                'user' => $this->returnUser($user),
+            ]);
+        } catch (\Throwable $th) {
+            return new Response($th->getMessage());
+        }
     }
 
     /**
