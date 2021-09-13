@@ -191,7 +191,7 @@ class UserController extends AbstractController
             $user = $this->em->getRepository(User::class)->find($data['id']);
             $role = $this->em
                 ->getRepository(Role::class)
-                ->findBy(['type' => $data['type']]);
+                ->findOneBy(['type' => $data['type']]);
 
             if ($data['action'] == 'remove') {
                 $user->removeRole($role);
