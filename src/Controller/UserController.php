@@ -186,23 +186,27 @@ class UserController extends AbstractController
      */
     public function ManageRole(Request $r): Response
     {
-        $data = json_decode($r->getContent(), true);
-        $user = $this->em->getRepository(User::class)->find($data['id']);
-        $role = $this->em
-            ->getRepository(Role::class)
-            ->findBy(['type' => $data['type']]);
+        try {
+            $data = json_decode($r->getContent(), true);
+            $user = $this->em->getRepository(User::class)->find($data['id']);
+            $role = $this->em
+                ->getRepository(Role::class)
+                ->findBy(['type' => $data['type']]);
 
-        if ($data['action'] == 'remove') {
-            $user->removeRole($role);
-        } else {
-            $user->addRole($role);
+            if ($data['action'] == 'remove') {
+                $user->removeRole($role);
+            } else {
+                $user->addRole($role);
+            }
+            $this->em->persist($user);
+            $this->em->flush();
+            return $this->json([
+                'message' => 'success',
+                'user' => $this->returnUser($user),
+            ]);
+        } catch (\Throwable $th) {
+            return new Response($th->getMessage());
         }
-        $this->em->persist($user);
-        $this->em->flush();
-        return $this->json([
-            'message' => 'success',
-            'user' => $this->returnUser($user),
-        ]);
     }
 
     /**
