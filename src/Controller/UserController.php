@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use function PHPSTORM_META\type;
+
 class UserController extends AbstractController
 {
     private $em;
@@ -186,7 +188,9 @@ class UserController extends AbstractController
     {
         $data = json_decode($r->getContent(), true);
         $user = $this->em->getRepository(User::class)->find($data['id']);
-        $role = $this->em->getRepository(Role::class)->find($data['role_id']);
+        $role = $this->em
+            ->getRepository(Role::class)
+            ->findBy(['type' => $data['type']]);
 
         if ($data['action'] == 'remove') {
             $user->removeRole($role);
