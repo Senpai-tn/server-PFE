@@ -34,6 +34,13 @@ class ClaimController extends AbstractController
         $list['updated_at'] = $claim->getUpdatedAt();
         $list['state'] = $claim->getState();
         $list['images'] = $claim->getImages();
+        $list['user']['id'] = $claim->getUser()->getId();
+        $list['user']['firstName'] = $claim->getUser()->getFirstName();
+        $list['user']['lastName'] = $claim->getUser()->getLastName();
+        $list['user']['email'] = $claim->getUser()->getEmail();
+        $list['user']['adress'] = $claim->getUser()->getAdress();
+        $list['user']['tel'] = $claim->getUser()->getTel();
+        $list['user']['login'] = $claim->getUser()->getLogin();
         return $list;
     }
 
