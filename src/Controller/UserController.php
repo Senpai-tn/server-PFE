@@ -20,10 +20,13 @@ use function PHPSTORM_META\type;
 class UserController extends AbstractController
 {
     private $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
+    private $client;
+    public function __construct(
+        EntityManagerInterface $em,
+        HttpClientInterface $client
+    ) {
         $this->em = $em;
+        $this->client = $client;
     }
 
     function returnUser($user)
@@ -205,24 +208,25 @@ class UserController extends AbstractController
             }
             $this->em->persist($user);
             $this->em->flush();
-            // $response = $this->client->request(
-            //     'POST',
-            //     'https://exp.host/--/api/v2/push/send',
-            //     [
-            //         'headers' => [
-            //             'Content-Type' => 'application/json',
-            //             'Accept' => 'application/json',
-            //             'Accept-encoding' => 'gzip, deflate',
-            //         ],
-            //         'body' => json_encode([
-            //             'to' => $user->getExpoId(),
-            //             'sound' => 'default',
-            //             'title' => date('H:i:s'),
-            //             'body' => 'Tudo bem ?',
-            //             'data' => ['someData' => 'goes here'],
-            //         ]),
-            //     ]
-            // );
+
+            $response = $this->client->request(
+                'POST',
+                'https://exp.host/--/api/v2/push/send',
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                        'Accept-encoding' => 'gzip, deflate',
+                    ],
+                    'body' => json_encode([
+                        'to' => $user->getExpoId(),
+                        'sound' => 'default',
+                        'title' => date('H:i:s'),
+                        'body' => 'Tudo bem ?',
+                        'data' => ['someData' => 'goes here'],
+                    ]),
+                ]
+            );
             return $this->json([
                 'message' => 'success',
                 'user' => $this->returnUser($user),
