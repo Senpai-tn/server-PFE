@@ -205,7 +205,7 @@ class UserController extends AbstractController
             }
             $this->em->persist($user);
             $this->em->flush();
-            $this->client->request(
+            $response = $this->client->request(
                 'POST',
                 'https://exp.host/--/api/v2/push/send',
                 [
