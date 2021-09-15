@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function PHPSTORM_META\type;
 
@@ -204,6 +205,24 @@ class UserController extends AbstractController
             }
             $this->em->persist($user);
             $this->em->flush();
+            $this->client->request(
+                'POST',
+                'https://exp.host/--/api/v2/push/send',
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                        'Accept-encoding' => 'gzip, deflate',
+                    ],
+                    'body' => json_encode([
+                        'to' => $user->getExpoId(),
+                        'sound' => 'default',
+                        'title' => date('H:i:s'),
+                        'body' => 'Tudo bem ?',
+                        'data' => ['someData' => 'goes here'],
+                    ]),
+                ]
+            );
             return $this->json([
                 'message' => 'success',
                 'user' => $this->returnUser($user),
