@@ -192,10 +192,14 @@ class UserController extends AbstractController
             $role = $this->em
                 ->getRepository(Role::class)
                 ->findOneBy(['type' => $data['type']]);
-
-            if ($data['action'] == 'remove') {
-                $user->removeRole($role);
+            $role_user = $this->em
+                ->getRepository(Role::class)
+                ->findOneBy(['type' => 'USER']);
+            $user->remvoveAllRoles();
+            if ($data['type'] == 'USER') {
+                $user->addRole($role_user);
             } else {
+                $user->addRole($role_user);
                 $user->addRole($role);
             }
             $this->em->persist($user);
