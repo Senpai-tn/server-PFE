@@ -221,8 +221,10 @@ class UserController extends AbstractController
                     'body' => json_encode([
                         'to' => $user->getExpoId(),
                         'sound' => 'default',
-                        'title' => date('H:i:s'),
-                        'body' => 'Tudo bem ?',
+                        'title' => 'Your role was updated',
+                        'body' =>
+                            'An admin has updated your rôle to a ' .
+                            $data['type'],
                         'data' => ['someData' => 'goes here'],
                     ]),
                 ]
