@@ -41,6 +41,9 @@ class ClaimController extends AbstractController
         $list['user']['adress'] = $claim->getUser()->getAdress();
         $list['user']['tel'] = $claim->getUser()->getTel();
         $list['user']['login'] = $claim->getUser()->getLogin();
+        $list['coord']['latitude'] = $claim->getLatitude();
+        $list['coord']['longitude'] = $claim->getLongitude();
+
         return $list;
     }
 

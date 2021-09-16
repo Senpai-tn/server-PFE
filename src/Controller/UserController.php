@@ -223,7 +223,7 @@ class UserController extends AbstractController
                         'sound' => 'default',
                         'title' => 'Your role was updated',
                         'body' =>
-                            'An admin has updated your rôle to ' .
+                            'An admin has updated your role to ' .
                             $data['type'],
                         'data' => ['someData' => 'goes here'],
                     ]),

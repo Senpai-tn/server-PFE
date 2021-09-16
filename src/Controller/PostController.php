@@ -112,7 +112,7 @@ class PostController extends AbstractController
                             'to' => $user->getExpoId(),
                             'sound' => 'default',
                             'title' => date('H:i:s'),
-                            'body' => 'Tudo bem ?',
+                            'body' => 'New post! check it soon',
                             'data' => ['someData' => 'goes here'],
                         ]),
                     ]
