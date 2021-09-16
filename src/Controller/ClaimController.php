@@ -97,6 +97,8 @@ class ClaimController extends AbstractController
             $claim = new Claim();
             $claim->setCreatedAt(new DateTimeImmutable());
             $claim->setDescription($r->request->get('description'));
+            $claim->setLongitude($r->request->get('longitude'));
+            $claim->setLatitude($r->request->get('latitude'));
             $claim->setState('sent');
             $claim->setImages($images);
             $claim->setUser($user);
