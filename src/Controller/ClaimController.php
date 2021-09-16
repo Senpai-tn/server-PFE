@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @Route("/claim")
@@ -18,10 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class ClaimController extends AbstractController
 {
     private $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
+    private $client;
+    public function __construct(
+        EntityManagerInterface $em,
+        HttpClientInterface $client
+    ) {
         $this->em = $em;
+        $this->client = $client;
     }
 
     function returnClaim($claim)
@@ -125,6 +129,29 @@ class ClaimController extends AbstractController
             $claim->setUpdatedAt(new DateTimeImmutable());
             $this->em->persist($claim);
             $this->em->flush();
+            if ($data['state'] == 'accepted' || $data['state'] == 'refused') {
+                $response = $this->client->request(
+                    'POST',
+                    'https://exp.host/--/api/v2/push/send',
+                    [
+                        'headers' => [
+                            'Content-Type' => 'application/json',
+                            'Accept' => 'application/json',
+                            'Accept-encoding' => 'gzip, deflate',
+                        ],
+                        'body' => json_encode([
+                            'to' => $claim->getUser()->getExpoId(),
+                            'sound' => 'default',
+                            'title' => 'Your claim was ' . $data['state'],
+                            'body' =>
+                                'An admin has ' .
+                                $data['state'] .
+                                ' your claim',
+                            'data' => ['someData' => 'goes here'],
+                        ]),
+                    ]
+                );
+            }
             return $this->json([
                 'message' => 'success',
                 'claim' => $this->returnClaim($claim),
