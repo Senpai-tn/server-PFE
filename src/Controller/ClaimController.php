@@ -99,6 +99,8 @@ class ClaimController extends AbstractController
                 ->getRepository(User::class)
                 ->find($r->request->get('user_id'));
             $claim = new Claim();
+            $claim->setLatitude($r->request->get('latitude'));
+            $claim->setLongitude($r->request->get('longitude'));
             $claim->setCreatedAt(new DateTimeImmutable());
             $claim->setDescription($r->request->get('description'));
             $claim->setLongitude($r->request->get('longitude'));

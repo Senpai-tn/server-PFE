@@ -98,7 +98,6 @@ class UserController extends AbstractController
         $data = json_decode($r->getContent(), true);
 
         $firstName = $data['firstName'];
-
         $lastName = $data['lastName'];
 
         $email = $data['email'];
