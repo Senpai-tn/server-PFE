@@ -37,6 +37,13 @@ class PostController extends AbstractController
         $list['images'] = $post->getImages();
         $list['created_at'] = $post->getCreatedAt();
         $list['deleted_at'] = $post->getDeletedAt();
+        $list['user']['id'] = $post->getUser()->getId();
+        $list['user']['firstName'] = $post->getUser()->getFirstName();
+        $list['user']['lastName'] = $post->getUser()->getLastName();
+        $list['user']['email'] = $post->getUser()->getEmail();
+        $list['user']['adress'] = $post->getUser()->getAdress();
+        $list['user']['tel'] = $post->getUser()->getTel();
+        $list['user']['login'] = $post->getUser()->getLogin();
         return $list;
     }
 
