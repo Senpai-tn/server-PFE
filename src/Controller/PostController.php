@@ -83,9 +83,13 @@ class PostController extends AbstractController
     public function Add(Request $r): Response
     {
         try {
+            $user = $this->em
+                ->getRepository(User::class)
+                ->find($r->request->get('title'));
             $post = new Post();
             $post->setTitle($r->request->get('title'));
             $post->setDescription($r->request->get('Description'));
+            $post->setUser($user);
             $post->setCreatedAt(new DateTimeImmutable());
             $post->setDeletedAt(null);
             $files = [];
