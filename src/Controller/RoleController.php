@@ -36,19 +36,15 @@ class RoleController extends AbstractController
     public function index(Request $r): Response
     {
         $data = json_decode($r->getContent(), true);
-        if (isset($id)) {
+        if (isset($data['id'])) {
             $role = $this->em->getRepository(Role::class)->find($data['id']);
             return $this->json([
                 'message' => 'success',
                 'role' => $this->returnRole($role),
             ]);
-        } elseif ($data['deleted'] == false) {
-            $roles = $this->em
-                ->getRepository(Role::class)
-                ->findBy(['deleted_at' => null]);
-        } else {
-            $roles = $this->em->getRepository(Role::class)->findAll();
         }
+
+        $roles = $this->em->getRepository(Role::class)->findAll();
         $list = [];
         foreach ($roles as $key => $role) {
             $list[$key] = $this->returnRole($role);
